@@ -882,7 +882,27 @@ void compute_time_step(double* dtmin)
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
 
-  
+  for (i = 2; i < imax - 1; i++) {
+    for (j = 2; jmax-1; j++) {
+
+      beta2 = max(pow(u[i][j][1],2) + pow(u[i][j][2]), rkappa*vel2ref);
+
+      lambda_x = half*(fabs(u[i][j][1]) + pow(pow(u[i][j][1], 2) + four*beta2,1/2));
+
+      lambda_y = half*(fabs(u[i][j][2]) + pow(pow(u[i][j][2], 2) + four*beta2,1/2));
+
+      lambda_max = max(lambda_x, lambda_y);
+
+      dtconv = min(dx, dy)/fabs(lambda_max);  // Convective
+      dtvisc = dx*dy/(four*rmu/rho);             // Diffusive
+
+      //Local Time step
+      dt[i][j] = cfl*min(dtconv, dtvisc);
+
+      // Updating the global time step
+      dtmin = min(dt[i][j], dtmin);
+    }
+  }
 
 }  
 /**************************************************************************/
