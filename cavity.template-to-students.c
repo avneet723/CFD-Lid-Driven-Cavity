@@ -883,7 +883,7 @@ void compute_time_step(double* dtmin)
 /* !************************************************************** */
 
   for (i = 2; i < imax - 1; i++) {
-    for (j = 2; jmax-1; j++) {
+    for (j = 2; j < jmax-1; j++) {
 
       beta2 = max(pow(u[i][j][1],2) + pow(u[i][j][2]), rkappa*vel2ref);
 
@@ -893,7 +893,7 @@ void compute_time_step(double* dtmin)
 
       lambda_max = max(lambda_x, lambda_y);
 
-      dtconv = min(dx, dy)/fabs(lambda_max);  // Convective
+      dtconv = min(dx, dy)/fabs(lambda_max);     // Convective
       dtvisc = dx*dy/(four*rmu/rho);             // Diffusive
 
       //Local Time step
@@ -927,6 +927,58 @@ void Compute_Artificial_Viscosity()
 /* !************************************************************** */
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
+
+  for (i = 2; i < imax - 1; i++) {
+      for (j = 2; j < jmax - 1; j++) {
+
+        // Finding the max lambda_x and lambda_y 
+        double lambda_x_old = lambda_x;
+        double lambda_y_old = lambda_y;
+        lambda_x = half*(fabs(u[i][j][1]) + pow(pow(u[i][j][1], 2) + four*beta2,1/2));
+        lambda_y = half*(fabs(u[i][j][2]) + pow(pow(u[i][j][2], 2) + four*beta2,1/2));
+        if(lambda_x_old > lambda_x) {
+          lambda_x = lambda_x_old;
+        }
+        if(lambda_y_old > lambda_y) {
+          lambda_y = lambda_y_old;
+        }
+      }
+  }
+
+  for (i = 2; i < imax - 1; i++) {
+    for (j = 2; j < jmax - 1; j++) {
+
+      if (i == 2) {
+        d4pdx4[i][j] = (-54*u[i][j][0] + 12*u[i - 1][j][0] + 96*u[i+1][j][0] - 84*u[i+2][j][0] 
+          + 36*u[i+3][j][0] - 6*u[i+4][j][0])/(6*pow(dx,4));
+      } else if (i == imax - 1) {
+        d4pdx4[i][j] = (-54*u[i][j][0] + 96*u[i - 1][j][0] - 84*u[i-2][j][0] + 36*u[i-3][j][0] 
+          - 6*u[i-4][j][0] + 12*u[i+1][j][0])/(6*pow(dx,4));
+      } else {
+        d4pdx4[i][j] = (u[i+2][j][0] - 4*u[i+1][j][0] + 6*u[i][j][0] - 4*u[i-1][j][0] 
+          + u[i-2][j][0])/(pow(dx,4));
+      }
+
+      if (j == 2) {
+        d4pdy4[i][j] = (-54*u[i][j][0] + 12*u[i][j-1][0] + 96*u[i][j+1][0] - 84*u[i][j+2][0] 
+          + 36*u[i][j+3][0] - 6*u[i][j+4][0])/(6*pow(dy,4));
+      } else if (j == jmax - 1) {
+        d4pdy4[i][j] = (-54*u[i][j][0] + 96*u[i][j-1][0] - 84*u[i][j-2][0] + 36*u[i][j-3][0] 
+          - 6*u[i][j-4][0] + 12*u[i][j+1][0])/(6*pow(dy,4));
+      } else {
+        d4pdy4[i][j] = (u[i][j+2][0] - 4*u[i][j+1][0] + 6*u[i][j][0] - 4*u[i][j-1][0] 
+          + u[i][j-2][0])/(pow(dy,4));
+      }
+
+
+      // May need to change the i and j to i - 1 and j - 1 to account for the node location and index discrepancy 
+      beta2 = max(pow(u[i][j][1],2) + pow(u[i][j][2]), rkappa*vel2ref);
+      artviscx[i][j] = (-1 * lambda_x * Cx *pow(dx, 3))/beta2 * d4pdx4[i][j];
+      artviscy[i][j] = (-1 * lambda_y * Cy *pow(dy, 3))/beta2 * d4pdy4[i][j];
+
+    }
+  }
+  
 
   
 }
