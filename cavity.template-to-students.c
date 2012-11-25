@@ -900,7 +900,7 @@ void compute_time_step(double* dtmin)
       dt[i][j] = cfl*min(dtconv, dtvisc);
 
       // Updating the global time step
-      *dtmin = min(dt[i][j], dtmin);
+      dtmin*  = min(dt[i][j], dtmin);
     }
   }
 
