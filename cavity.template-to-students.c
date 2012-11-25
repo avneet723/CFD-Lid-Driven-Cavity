@@ -928,8 +928,8 @@ void Compute_Artificial_Viscosity()
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
 
-  for (i = 2; i < imax - 1; i++) {
-      for (j = 2; j < jmax - 1; j++) {
+  for (i = 1; i < imax - 1; i++) {
+      for (j = 1; j < jmax - 1; j++) {
 
         // Finding the max lambda_x and lambda_y 
         double lambda_x_old = lambda_x;
@@ -945,13 +945,13 @@ void Compute_Artificial_Viscosity()
       }
   }
 
-  for (i = 2; i < imax - 1; i++) {
-    for (j = 2; j < jmax - 1; j++) {
+  for (i = 1; i < imax - 1; i++) {
+    for (j = 1; j < jmax - 1; j++) {
 
-      if (i == 2) {
+      if (i == 1) {
         d4pdx4 = (-54*u[i][j][0] + 12*u[i - 1][j][0] + 96*u[i+1][j][0] - 84*u[i+2][j][0] 
           + 36*u[i+3][j][0] - 6*u[i+4][j][0])/(6*pow(dx,4));
-      } else if (i == imax - 1) {
+      } else if (i == imax - 2) {
         d4pdx4 = (-54*u[i][j][0] + 96*u[i - 1][j][0] - 84*u[i-2][j][0] + 36*u[i-3][j][0] 
           - 6*u[i-4][j][0] + 12*u[i+1][j][0])/(6*pow(dx,4));
       } else {
@@ -959,10 +959,10 @@ void Compute_Artificial_Viscosity()
           + u[i-2][j][0])/(pow(dx,4));
       }
 
-      if (j == 2) {
+      if (j == 1) {
         d4pdy4 = (-54*u[i][j][0] + 12*u[i][j-1][0] + 96*u[i][j+1][0] - 84*u[i][j+2][0] 
           + 36*u[i][j+3][0] - 6*u[i][j+4][0])/(6*pow(dy,4));
-      } else if (j == jmax - 1) {
+      } else if (j == jmax - 2) {
         d4pdy4 = (-54*u[i][j][0] + 96*u[i][j-1][0] - 84*u[i][j-2][0] + 36*u[i][j-3][0] 
           - 6*u[i][j-4][0] + 12*u[i][j+1][0])/(6*pow(dy,4));
       } else {
@@ -1087,6 +1087,34 @@ void point_Jacobi()
 /* !************************************************************** */
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
+
+  for (i = 1; i < imax - 1; i++) {
+    for (j = 1; j < jmax-1; j++) {
+
+      dpdx = (uold[i+1][j][0] - uold[i-1][j][0])/(two*dx);
+      dpdy = (uold[i][j+1][0] - uold[i][j-1][0])/(two*dy);
+
+      dudx = (uold[i+1][j][1] - uold[i-1][j][1])/(two*dx);
+      dudy = (uold[i][j+1][1] - uold[i][j-1][1])/(two*dy);
+
+      dudx = (uold[i+1][j][2] - uold[i-1][j][2])/(two*dx);
+      dudy = (uold[i][j+1][2] - uold[i][j-1][2])/(two*dy);
+
+      d2udx2 = (uold[i+1][j][1] - 2*uold[i][j][1] + uold[i-1][j][1])/(pow(dx,2));
+      d2udy2 = (uold[i][j+1][1] - 2*uold[i][j][1] + uold[i][j-1][1])/(pow(dy,2));
+
+      d2vdx2 = (uold[i+1][j][2] - 2*uold[i][j][2] + uold[i-1][j][2])/(pow(dx,2));
+      d2vdy2 = (uold[i][j+1][2] - 2*uold[i][j][2] + uold[i][j-1][2])/(pow(dy,2));
+
+      uvel2 = pow(uold[i][j][1],2) + pow(uold[i][j][2],2);
+
+      beta2 = max(uvel2, rkappa*vel2ref);
+
+      u[i][j][0] = uold[i][j][0] - beta2*dt*(rho*dudx + rho*dvdy - (artviscx + artviscy) - s[i][j][0]);
+      u[i][j][1] = uold[i][j][1] - dt*rhoinv*(rho*uold[i][j][1]*dudx + rho*uold[i][j][2]*dudy + dpdx - rmu*d2udx2 - rmu*d2udy2 - s[i][j][1]);
+      u[i][j][2] = uold[i][j][2] - dt*rhoinv*(rho*uold[i][j][1]*dvdx + rho*uold[i][j][2]*dvdy + dpdy - rmu*d2vdx2 - rmu*d2vdy2 - s[i][j][2]);
+    }
+  }
 
 
 
