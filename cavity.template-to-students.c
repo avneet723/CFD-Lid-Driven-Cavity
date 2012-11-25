@@ -1115,8 +1115,24 @@ void point_Jacobi()
       u[i][j][2] = uold[i][j][2] - dt*rhoinv*(rho*uold[i][j][1]*dvdx + rho*uold[i][j][2]*dvdy + dpdy - rmu*d2vdx2 - rmu*d2vdy2 - s[i][j][2]);
     }
   }
+  
+  // Left Wall
+  i = 0;
+  for (j = 1; j < jmax; j++) {
+    u[i][j][0] = two*u[i+1][j][0] - u[i+2][j][0];
+  }
 
+  // Right Wall
+  i = imax - 1;
+  for (j = 1; j < jmax; j++) {
+    u[i][j][0] = two*u[i-1][j][0] - u[i-2][j][0];
+  }
 
+  //Bottom Wall
+  j = 0;
+  for (i = 1; i < imax - 1; i++) {
+    u[i][j][0] = two*u[i][1][0] - u[i][2][0];
+  }
 
 }
 /**************************************************************************/
@@ -1178,6 +1194,14 @@ int ninit, double rtime, double dtmin, double *conv)
 /* !************************************************************** */
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
+
+  for (i = 1; i < imax - 1; i++) { 
+    for (j = 1; j < jmax - 1; j++) {
+      for (k = 1; k < neq; k++) {
+        
+      }
+    }
+  }
 
 
 

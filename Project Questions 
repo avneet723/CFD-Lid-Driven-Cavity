@@ -1,0 +1,5 @@
+Questions for Dr. Roy
+
+- Ask about the discrepancy in compute artificial visc computation?
+- Ask about ipgorder in point_jacobi
+- Confirm our 4th order pressure gradients are right
