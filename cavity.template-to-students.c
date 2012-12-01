@@ -1156,7 +1156,7 @@ void point_Jacobi()
 
       beta2 = max(uvel2, rkappa*vel2ref);
 
-      u[i][j][0] = uold[i][j][0] - beta2*dt*(rho*dudx + rho*dvdy - (artviscx + artviscy) - s[i][j][0]);
+      u[i][j][0] = uold[i][j][0] - beta2*dt*(rho*dudx + rho*dvdy - (artviscx[i][j] + artviscy[i][j]) - s[i][j][0]);
       u[i][j][1] = uold[i][j][1] - dt*rhoinv*(rho*uold[i][j][1]*dudx + rho*uold[i][j][2]*dudy + dpdx - rmu*d2udx2 - rmu*d2udy2 - s[i][j][1]);
       u[i][j][2] = uold[i][j][2] - dt*rhoinv*(rho*uold[i][j][1]*dvdx + rho*uold[i][j][2]*dvdy + dpdy - rmu*d2vdx2 - rmu*d2vdy2 - s[i][j][2]);
     }
