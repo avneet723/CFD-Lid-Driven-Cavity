@@ -47,7 +47,7 @@
   const int nmax = 500000;        /* Maximum number of iterations */
   const int iterout = 5000;       /* Number of time steps between solution output */
   const int imms = 1;             /* Manufactured solution flag: = 1 for manuf. sol., = 0 otherwise */
-  const int isgs = 1;             /* Symmetric Gauss-Seidel  flag: = 1 for SGS, = 0 for point Jacobi */
+  const int isgs = 0;             /* Symmetric Gauss-Seidel  flag: = 1 for SGS, = 0 for point Jacobi */
   const int irstr = 0;            /* Restart flag: = 1 for restart (file 'restart.in', = 0 for initial run */
   const int ipgorder = 0;         /* Order of pressure gradient: 0 = 2nd, 1 = 3rd (not needed) */
   const int lim = 0;              /* variable to be used as the limiter sensor (= 0 for pressure) */
@@ -1307,7 +1307,7 @@ double rL2norm[neq], double rLinfnorm[neq])
       for (i = 1; i < imax - 1; i++) { 
         for (j = 1; j < jmax - 1; j++) {      
 
-          DE = fabs(u[i][j][k]) - umms(i,j,k));   
+          DE = fabs(u[i][j][k] - umms(i,j,k));   
           rL1norm[k] += DE;
           rL2norm[k] += pow(DE, 2);
           if (DE > oldDE) {
