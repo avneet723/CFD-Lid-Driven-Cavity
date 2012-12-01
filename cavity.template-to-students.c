@@ -946,7 +946,7 @@ void compute_time_step(double* dtmin)
       dt[i][j] = cfl*min(dtconv, dtvisc);
 
       // Updating the global time step
-      dtmin*  = min(dt[i][j], dtmin);
+      *dtmin  = min(dt[i][j], *dtmin);
     }
   }
 
@@ -1252,8 +1252,12 @@ int ninit, double rtime, double dtmin, double *conv)
     res[k]=pow(res[k]/((imax-two)*(jmax-two)),0.5);
   }
 
-  conv = max(max(res[0], res[1]), res[2]);
-
+  *conv = res[0];
+  for (k = 0; k < neq; k++) {
+	if (*conv >= res[k]) {
+		*conv = res[k];
+	}
+  }
 
   /* Write iterative residuals every 10 iterations */
   if( ((n%10)==0)||(n==ninit) )
@@ -1302,7 +1306,7 @@ double rL2norm[neq], double rLinfnorm[neq])
       for (i = 1; i < imax - 1; i++) { 
         for (j = 1; j < jmax - 1; j++) {      
 
-          DE = fabs(u(i,j,k) - ums(i,j,k));   
+          DE = fabs(u[i][j][k] - ums(i,j,k));   
           rL1norm[k] += DE;
           rL2norm[k] += pow(DE, 2);
           if (DE > oldDE) {
