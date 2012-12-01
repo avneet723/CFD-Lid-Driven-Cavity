@@ -1241,15 +1241,18 @@ int ninit, double rtime, double dtmin, double *conv)
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
 
-  for (i = 1; i < imax - 1; i++) { 
-    for (j = 1; j < jmax - 1; j++) {
-      for (k = 1; k < neq; k++) {
-        
+  for (k = 0; k < neq; k++) {
+    for (i = 1; i < imax - 1; i++) { 
+      for (j = 1; j < jmax - 1; j++) {      
+
+        res[k] += pow((u[i][j][k]-uold[i][j][k])/dtmin,2);
+
       }
     }
+    res[k]=pow(res[k]/((imax-two)*(jmax-two)),0.5);
   }
 
-
+  conv = max(max(res[0], res[1]), res[2]);
 
 
   /* Write iterative residuals every 10 iterations */
@@ -1285,14 +1288,32 @@ double rL2norm[neq], double rLinfnorm[neq])
   double y = -99.9;       /* Temporary variable for y location */
   double DE = -99.9;  	/* Discretization error (absolute value) */
 
+  // Old DE
+  double oldDE = -99.9; 
+
   if(imms==1)
   {
   
 /* !************************************************************** */
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
+  
+    for (k = 0; k < neq; k++) {
+      for (i = 1; i < imax - 1; i++) { 
+        for (j = 1; j < jmax - 1; j++) {      
 
-
+          DE = fabs(u(i,j,k) - ums(i,j,k));   
+          rL1norm[k] += DE;
+          rL2norm[k] += pow(DE, 2);
+          if (DE > oldDE) {
+            rLinfnorm[k] = DE;
+          }
+          oldDE = DE;
+        }
+      }
+      rL1norm[k] = rL1norm[k]/((imax-two)*(jmax-two));
+      rL2norm[k] = pow(rL2norm[k]/((imax-two)*(jmax-two)), 0.5);
+    }
 
   }
   
