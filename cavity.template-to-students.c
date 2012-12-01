@@ -542,14 +542,14 @@ void bndry()
   for (i = 1; i < imax-1; i++) {
     u[i][j][1] = uinf;
     u[i][j][2] = 0;
-    u[i][j][0] = two*u[i]j[j-1][0] - u[i][j-2][0]; 
+    u[i][j][0] = two*u[i][j-1][0] - u[i][j-2][0]; 
   }
 
 // set pressure corner points
-  u[0][0][0]=two*u[1][0][0]-u[2][0][0]
-  u[imax-1][0][0]=two*u[imax-2][0][0]-u[imax-3][0][0]
-  u[0][jmax-1][0]=two*u[0][jmax-2][0]-u[0][jmax-3][0]
-  u[imax-1][jmax-1][0]=two*u[imax-2][jmax-1][0]-u[imax-3][jmax-1][0]
+  u[0][0][0]=two*u[1][0][0]-u[2][0][0];
+  u[imax-1][0][0]=two*u[imax-2][0][0]-u[imax-3][0][0];
+  u[0][jmax-1][0]=two*u[0][jmax-2][0]-u[0][jmax-3][0];
+  u[imax-1][jmax-1][0]=two*u[imax-2][jmax-1][0]-u[imax-3][jmax-1][0];
 
 
 
