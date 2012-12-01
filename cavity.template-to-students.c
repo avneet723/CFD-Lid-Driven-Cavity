@@ -1254,10 +1254,11 @@ int ninit, double rtime, double dtmin, double *conv)
 
   *conv = res[0];
   for (k = 0; k < neq; k++) {
-	if (*conv >= res[k]) {
-		*conv = res[k];
-	}
+    if (*conv >= res[k]) {
+      *conv = res[k];
+    }
   }
+
 
   /* Write iterative residuals every 10 iterations */
   if( ((n%10)==0)||(n==ninit) )
@@ -1306,7 +1307,7 @@ double rL2norm[neq], double rLinfnorm[neq])
       for (i = 1; i < imax - 1; i++) { 
         for (j = 1; j < jmax - 1; j++) {      
 
-          DE = fabs(u[i][j][k] - ums(i,j,k));   
+          DE = fabs(u[i][j][k]) - umms(i,j,k));   
           rL1norm[k] += DE;
           rL2norm[k] += pow(DE, 2);
           if (DE > oldDE) {
