@@ -15,8 +15,8 @@
 #endif
 
 /************* Following are fixed parameters for array sizes **************/
-#define imax 65   	/* Number of points in the x-direction (use odd numbers only) */
-#define jmax 65  	/* Number of points in the y-direction (use odd numbers only) */
+#define imax 129   	/* Number of points in the x-direction (use odd numbers only) */
+#define jmax 129 	/* Number of points in the y-direction (use odd numbers only) */
 #define neq 3       /* Number of equation to be solved ( = 3: mass, x-mtm, y-mtm) */
 
 /**********************************************/
@@ -996,10 +996,10 @@ void Compute_Artificial_Viscosity()
 
       if (i == 1) {
         d4pdx4 = (-54.0*u[i][j][0] + 12.0*u[i - 1][j][0] + 96.0*u[i+1][j][0] - 84.0*u[i+2][j][0] 
-          + 36.0*u[i+3][j][0] - 6*u[i+4][j][0])/(6*pow(dx,4));
+          + 36.0*u[i+3][j][0] - 6.0*u[i+4][j][0])/(6.0*pow(dx,4));
       } else if (i == imax - 2) {
         d4pdx4 = (-54.0*u[i][j][0] + 96.0*u[i - 1][j][0] - 84.0*u[i-2][j][0] + 36.0*u[i-3][j][0] 
-          - 6*u[i-4][j][0] + 12.0*u[i+1][j][0])/(6*pow(dx,4));
+          - 6*u[i-4][j][0] + 12.0*u[i+1][j][0])/(6.0*pow(dx,4));
       } else {
         d4pdx4 = (u[i+2][j][0] - 4.0*u[i+1][j][0] + 6.0*u[i][j][0] - 4.0*u[i-1][j][0] 
           + u[i-2][j][0])/(pow(dx,4));
@@ -1007,10 +1007,10 @@ void Compute_Artificial_Viscosity()
 
       if (j == 1) {
         d4pdy4 = (-54.0*u[i][j][0] + 12.0*u[i][j-1][0] + 96.0*u[i][j+1][0] - 84.0*u[i][j+2][0] 
-          + 36.0*u[i][j+3][0] - 6*u[i][j+4][0])/(6*pow(dy,4));
+          + 36.0*u[i][j+3][0] - 6.0*u[i][j+4][0])/(6.0*pow(dy,4));
       } else if (j == jmax - 2) {
         d4pdy4 = (-54.0*u[i][j][0] + 96.0*u[i][j-1][0] - 84.0*u[i][j-2][0] + 36.0*u[i][j-3][0] 
-          - 6*u[i][j-4][0] + 12.0*u[i][j+1][0])/(6*pow(dy,4));
+          - 6.0*u[i][j-4][0] + 12.0*u[i][j+1][0])/(6.0*pow(dy,4));
       } else {
         d4pdy4 = (u[i][j+2][0] - 4.0*u[i][j+1][0] + 6.0*u[i][j][0] - 4.0*u[i][j-1][0] 
           + u[i][j-2][0])/(pow(dy,4));
@@ -1231,18 +1231,10 @@ int ninit, double rtime, double dtmin, double *conv)
   for (k = 0; k < neq; k++) {
     for (i = 1; i < imax - 1; i++) { 
       for (j = 1; j < jmax - 1; j++) {      
-
         res[k] += pow((u[i][j][k]-uold[i][j][k])/dt[i][j],2);
-	
-       // printf("(%d,%d) dt = %f\n", i, j, dt[i][j]);
-       //printf("%d,%d,%d,%f,%f\n",i,j,k,u[i][j][k],uold[i][j][k]);
       }
     }
-    //printf("It get's here-A\n");
-    //printf("%f\n", res[0]);
     res[k]=pow(res[k]/((imax-2)*(jmax-2)),0.5);
-    //printf("It get's here-B\n");
-    //printf("%f\n", res[0]);
   }
 
   if (n <= 5) {
@@ -1256,14 +1248,14 @@ int ninit, double rtime, double dtmin, double *conv)
   	}
  	*conv = res[0];
   	for (k = 0; k < neq; k++) {
-    		if (*conv >= res[k]) {
+    		if (*conv <= res[k]) {
       			*conv = res[k];
     		}
   	}
   }
 
   /* Write iterative residuals every 10 iterations */
-  if( ((n%10)==0)||(n==ninit) )
+  if( ((n%1000)==0)||(n==ninit) )
   {
     fprintf(fp1, "%d %e %e %e %e\n",n, rtime, res[0], res[1], res[2] );
     printf("%d   %e   %e   %e   %e   %e\n",n, rtime, dtmin, res[0], res[1], res[2] );    
@@ -1271,7 +1263,7 @@ int ninit, double rtime, double dtmin, double *conv)
   }
       
   /* Write header for iterative residuals every 200 iterations */
-  if( ((n%200)==0)||(n==ninit) )
+  if( ((n%10000)==0)||(n==ninit) )
   {
 	  printf("Iter. Time (s)   dt (s)      Continuity    x-Momentum    y-Momentum\n"); 
   }  
@@ -1304,25 +1296,25 @@ double rL2norm[neq], double rLinfnorm[neq])
 /* !************************************************************** */
 /* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 /* !************************************************************** */
-  
-    for (k = 0; k < neq; k++) {
-      for (i = 1; i < imax - 1; i++) { 
-        for (j = 1; j < jmax - 1; j++) {      
+    
 
-          DE = fabs(u[i][j][k] - umms(i,j,k));   
+    for (k = 0; k < neq; k++) {
+      for (i = 0; i < imax; i++) { 
+        for (j = 0; j < jmax; j++) {      
+
+          x = (xmax - xmin)*(double)(i)/(double)(imax - 1);
+          y = (ymax - ymin)*(double)(j)/(double)(jmax - 1);
+          DE = fabs(u[i][j][k] - umms(x,y,k));   
           rL1norm[k] += DE;
           rL2norm[k] += pow(DE, 2);
-          if (DE > oldDE) {
-            rLinfnorm[k] = DE;
-          }
+	  rLinfnorm[k] = fmax(DE, oldDE);
           oldDE = DE;
         }
       }
       rL1norm[k] = rL1norm[k]/((imax-two)*(jmax-two));
       rL2norm[k] = pow(rL2norm[k]/((imax-two)*(jmax-two)), 0.5);
+      printf("k: %d, L1: %f, L2: %f, Linf: %f \n", k, rL1norm[k], rL2norm[k], rLinfnorm[k]);
+      oldDE = -99.9;
     }
-
   }
-  
 }
->>>>>>> Fixed divergence errors. (Before working on report)
