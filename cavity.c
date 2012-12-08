@@ -15,8 +15,13 @@
 #endif
 
 /************* Following are fixed parameters for array sizes **************/
+<<<<<<< HEAD
 #define imax 129   	/* Number of points in the x-direction (use odd numbers only) */
 #define jmax 129 	/* Number of points in the y-direction (use odd numbers only) */
+=======
+#define imax 257   	/* Number of points in the x-direction (use odd numbers only) */
+#define jmax 257 	/* Number of points in the y-direction (use odd numbers only) */
+>>>>>>> Most recent file from rlogin (through filezilla)
 #define neq 3       /* Number of equation to be solved ( = 3: mass, x-mtm, y-mtm) */
 
 /**********************************************/
