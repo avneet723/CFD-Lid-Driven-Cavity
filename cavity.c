@@ -15,13 +15,8 @@
 #endif
 
 /************* Following are fixed parameters for array sizes **************/
-<<<<<<< HEAD
-#define imax 129   	/* Number of points in the x-direction (use odd numbers only) */
-#define jmax 129 	/* Number of points in the y-direction (use odd numbers only) */
-=======
-#define imax 257   	/* Number of points in the x-direction (use odd numbers only) */
-#define jmax 257 	/* Number of points in the y-direction (use odd numbers only) */
->>>>>>> Most recent file from rlogin (through filezilla)
+#define imax 65   	/* Number of points in the x-direction (use odd numbers only) */
+#define jmax 65 	/* Number of points in the y-direction (use odd numbers only) */
 #define neq 3       /* Number of equation to be solved ( = 3: mass, x-mtm, y-mtm) */
 
 /**********************************************/
@@ -51,17 +46,17 @@
 
   const int nmax = 500000;        /* Maximum number of iterations */
   const int iterout = 5000;       /* Number of time steps between solution output */
-  const int imms = 0;             /* Manufactured solution flag: = 1 for manuf. sol., = 0 otherwise */
+  const int imms = 1;             /* Manufactured solution flag: = 1 for manuf. sol., = 0 otherwise */
   const int isgs = 0;             /* Symmetric Gauss-Seidel  flag: = 1 for SGS, = 0 for point Jacobi */
   const int irstr = 0;            /* Restart flag: = 1 for restart (file 'restart.in', = 0 for initial run */
   const int ipgorder = 0;         /* Order of pressure gradient: 0 = 2nd, 1 = 3rd (not needed) */
   const int lim = 0;              /* variable to be used as the limiter sensor (= 0 for pressure) */
 
   const double cfl  = 0.4;      /* CFL number used to determine time step */
-  const double Cx = 0.01;     	/* Parameter for 4th order artificial viscosity in x */
-  const double Cy = 0.01;      	/* Parameter for 4th order artificial viscosity in y */
+  const double Cx = 0.005;     	/* Parameter for 4th order artificial viscosity in x */
+  const double Cy = 0.005;      	/* Parameter for 4th order artificial viscosity in y */
   const double toler = 1.e-10; 	/* Tolerance for iterative residual convergence */
-  const double rkappa = 0.1;   	/* Time derivative preconditioning constant */
+  const double rkappa = 0.9;   	/* Time derivative preconditioning constant */
   const double Re = 100.0;      	/* Reynolds number = rho*Uinf*L/rmu */
   const double pinf = 0.801333844662; /* Initial pressure (N/m^2) -> from MMS value at cavity center */
   const double uinf = 1.0;      /* Lid velocity (m/s) */
@@ -198,8 +193,8 @@ for (i=0; i<imax; i++)
      res[k] = -99.9;
      resinit[k] = -99.9;
      res[k] = -99.9;
-     rL1norm[k] = -99.9;
-     rL2norm[k] = -99.9;
+     rL1norm[k] = 0;
+     rL2norm[k] = 0;
      rLinfnorm[k] = -99.9;        
    }
  }    
@@ -557,7 +552,7 @@ void bndry()
 // set pressure corner points
   u[0][0][0]=two*u[1][0][0]-u[2][0][0];    //lower left P
   u[imax-1][0][0]=two*u[imax-2][0][0]-u[imax-3][0][0];  //lower right P
-  u[0][jmax-1][0]=two*u[0][jmax-2][0]-u[0][jmax-3][0];  //upper left P
+  u[0][jmax-1][0]=two*u[1][jmax-1][0]-u[2][jmax-1][0];  //upper left P
   u[imax-1][jmax-1][0]=two*u[imax-2][jmax-1][0]-u[imax-3][jmax-1][0];  //upper right P
 
 
@@ -1290,7 +1285,7 @@ double rL2norm[neq], double rLinfnorm[neq])
 
   double x = -99.9;       /* Temporary variable for x location */
   double y = -99.9;       /* Temporary variable for y location */
-  double DE = -99.9;  	/* Discretization error (absolute value) */
+  double DE = 0.0;  	/* Discretization error (absolute value) */
 
   // Old DE
   double oldDE = -99.9; 
@@ -1304,22 +1299,23 @@ double rL2norm[neq], double rLinfnorm[neq])
     
 
     for (k = 0; k < neq; k++) {
-      for (i = 0; i < imax; i++) { 
-        for (j = 0; j < jmax; j++) {      
+      for (i = 1; i < imax-1; i++) { 
+        for (j = 1; j < jmax-1; j++) {      
 
           x = (xmax - xmin)*(double)(i)/(double)(imax - 1);
           y = (ymax - ymin)*(double)(j)/(double)(jmax - 1);
           DE = fabs(u[i][j][k] - umms(x,y,k));   
-          rL1norm[k] += DE;
-          rL2norm[k] += pow(DE, 2);
-	  rLinfnorm[k] = fmax(DE, oldDE);
-          oldDE = DE;
+          rL1norm[k] = rL1norm[k] + DE;
+          rL2norm[k] = rL2norm[k] + pow(DE, 2);
+	  rLinfnorm[k] = max(DE, oldDE);
+          oldDE = rLinfnorm[k];
         }
       }
       rL1norm[k] = rL1norm[k]/((imax-two)*(jmax-two));
       rL2norm[k] = pow(rL2norm[k]/((imax-two)*(jmax-two)), 0.5);
-      printf("k: %d, L1: %f, L2: %f, Linf: %f \n", k, rL1norm[k], rL2norm[k], rLinfnorm[k]);
+      printf("k: %d, L1: %1.9f, L2: %1.9f, Linf: %1.9f \n", k, rL1norm[k], rL2norm[k], rLinfnorm[k]);
       oldDE = -99.9;
+      DE = 0.0;
     }
   }
 }
