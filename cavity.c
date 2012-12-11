@@ -501,17 +501,11 @@ void bndry()
   int j = 0;                       /* j index (y direction) */
 
   /* This applies the cavity boundary conditions */
-
-/* !************************************************************** */
-/* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
-/* !************************************************************** */
-
   // Set the corner points velocities
   u[0][jmax-1][1] = 0;    //upper left u
   u[imax-1][jmax-1][1] = 0;  // upper right u
   u[0][jmax-1][2] = 0;   //upper left v
   u[imax-1][jmax-1][2] = 0;  // upper right v
-
   u[0][0][1] = 0;  //lower left u
   u[imax-1][0][1] = 0; //lower right u
   u[0][0][2] = 0;  //lower left v
@@ -549,15 +543,11 @@ void bndry()
     u[i][j][0] = two*u[i][j-1][0] - u[i][j-2][0]; 
   }
 
-// set pressure corner points
+  // set pressure corner points
   u[0][0][0]=two*u[1][0][0]-u[2][0][0];    //lower left P
   u[imax-1][0][0]=two*u[imax-2][0][0]-u[imax-3][0][0];  //lower right P
   u[0][jmax-1][0]=two*u[1][jmax-1][0]-u[2][jmax-1][0];  //upper left P
   u[imax-1][jmax-1][0]=two*u[imax-2][jmax-1][0]-u[imax-3][jmax-1][0];  //upper right P
-
-
-
- 
 }
 /**************************************************************************/
 void bndrymms()
@@ -981,10 +971,6 @@ void Compute_Artificial_Viscosity()
   double d4pdx4 = -99.9;      /* 4th derivative of pressure w.r.t. x */
   double d4pdy4 = -99.9;      /* 4th derivative of pressure w.r.t. y */
 
-/* !************************************************************** */
-/* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
-/* !************************************************************** */
-
   for (i = 1; i < imax - 1; i++) {
     for (j = 1; j < jmax - 1; j++) {
 
@@ -1016,11 +1002,9 @@ void Compute_Artificial_Viscosity()
           + u[i][j-2][0])/(pow(dy,4));
       }
 
-
       // May need to change the i and j to i - 1 and j - 1 to account for the node location and index discrepancy 
       artviscx[i][j] = (-1.0 * lambda_x * Cx *pow(dx, 3))/beta2 * d4pdx4;
       artviscy[i][j] = (-1.0 * lambda_y * Cy *pow(dy, 3))/beta2 * d4pdy4;
-
     }
   }
   
@@ -1130,11 +1114,6 @@ void point_Jacobi()
   double uvel2 = -99.9;       /* Velocity squared */
 
   /* Point Jacobi method */
-  
-/* !************************************************************** */
-/* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
-/* !************************************************************** */
-
   for (i = 1; i < imax - 1; i++) {
     for (j = 1; j < jmax-1; j++) {
 
@@ -1220,10 +1199,6 @@ int ninit, double rtime, double dtmin, double *conv)
   int k = 0;                       /* k index (# of equations) */
 
   /* Compute iterative residuals to monitor iterative convergence */
-  
-/* !************************************************************** */
-/* !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
-/* !************************************************************** */
   res[0] = 0;
   res[1] = 0;
   res[2] = 0;
